@@ -16,9 +16,5 @@ Before download, please check if you have the following installed:
 # Database
 - MongoDB URI needed
 
-# Registered user
-- username: admin
-- password: password
-
 # Projekt
 Aplikacija služi za praćenje knjiga i njihovih statusa. Korisnik može unositi novu knjigu, ažurirati njezin status ili izbrisati ju. 
