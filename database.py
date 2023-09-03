@@ -23,10 +23,12 @@ async def init_db():
 
 async def create_user(user_in: models.UserIn):
     user_id = str(uuid.uuid4())
+    hashed_password = security.hash_password(user_in.password)
     user_db = models.UserDb(
         _id=user_id,
         username=user_in.username,
         email=user_in.email,
+        hashed_password=hashed_password, 
     )
     new_user = await db["users"].insert_one(jsonable_encoder(user_db))
     created_user = await db["users"].find_one({"_id": new_user.inserted_id})

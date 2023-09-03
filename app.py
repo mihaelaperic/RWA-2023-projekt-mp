@@ -27,24 +27,13 @@ async def get_me(current_user: dict = Depends(security.get_current_user)):
 async def login(form: OAuth2PasswordRequestForm = Depends()):
     return await security.login(form.username, form.password)
 
-@app.post("/register/user", response_model=models.UserDb)
-async def register_user(
-    user: models.UserIn = Body(...),
-    current_user: dict = Depends(security.get_current_user),
-):
-    if not security.is_valid_email(user.email):
-        raise HTTPException(status_code=400, detail="Invalid email format")
-    
-    hashed_password = security.hash_password(user.password)
-    user_db = models.UserDb(
-        _id=user.username,
-        email=user.email,
-        hashed_password=hashed_password,
-    )
-
-    new_user = await database.db["users"].insert_one(jsonable_encoder(user_db))
-    created_user = await database.db["users"].find_one({"_id": new_user.inserted_id})
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_user)
+@app.post("/register", response_model=models.UserDb)
+async def register_user(user_in: models.UserIn):
+    existing_user = await database.get_user_by_username_or_email(user_in.username, user_in.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User with the same username or email already exists")
+    created_user = await database.create_user(user_in)
+    return created_user
 
 ### API: Books ###
 
