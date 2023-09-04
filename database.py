@@ -1,4 +1,5 @@
 from fastapi.encoders import jsonable_encoder
+import pymongo
 import models
 import security
 import uuid
@@ -17,6 +18,12 @@ db = mongodb_client["booktracker_db"]
 books_collection = db["books"]
 
 async def init_db():
+    print("Connecting to the MongoDB database...")
+    client = mongodb_client
+    db = client["booktracker_db"]
+    books_collection = db.get_collection("books")
+    await books_collection.create_index([("_id", pymongo.ASCENDING)])
+
     print("Connected to the MongoDB database!")
 
 ### User ###
@@ -53,12 +60,13 @@ async def get_user(username: str, password: str = None):
 ### Book ###
 
 async def save_book(book_in: models.BookIn):
-    book_id = str(uuid.uuid4())
+    user_id = str(uuid.uuid4())
     book_db = models.BookDb(
-        _id=book_id,
+        _id=user_id,
         title=book_in.title,
         author=book_in.author,
-        status=book_in.status
+        status=book_in.status,
+        user_id=user_id,
     )
     new_book = await db["books"].insert_one(jsonable_encoder(book_db))
     created_book = await db["books"].find_one({"_id": new_book.inserted_id})
