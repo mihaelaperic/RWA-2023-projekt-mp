@@ -17,4 +17,4 @@ Before download, please check if you have the following installed:
 - MongoDB URI needed
 
 # Projekt
-Aplikacija služi za praćenje knjiga i njihovih statusa. Korisnik može unositi novu knjigu, ažurirati njezin status ili izbrisati ju. 
+Aplikacija služi za praćenje knjiga. Korisnik može unijeti novu knjigu, ažurirati njezin opis ili izbrisati ju. 
